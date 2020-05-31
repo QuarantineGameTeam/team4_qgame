@@ -16,3 +16,4 @@ const (
 const (
 	UnclearCommandText = "Unclear command"
 )
+
