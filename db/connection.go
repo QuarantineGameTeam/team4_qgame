@@ -5,7 +5,8 @@ import (
 	"strconv"
 	"team4_qgame/betypes"
 	"team4_qgame/loger"
-
+	"time"
+	"math/rand"
 	"github.com/go-redis/redis/v8"
 )
 
