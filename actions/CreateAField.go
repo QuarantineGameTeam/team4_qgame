@@ -18,7 +18,7 @@ func CreateAField(width, height int) betypes.Field {
 		mine[i] = betypes.Mine{Location: betypes.Point{X: rand.Intn(width) + 1, Y: rand.Intn(height) + 1}, Level: 1, ToBelong: 0}
 	}
 	for i := 0; i < cap(clan); i++ {
-		clan[i] = betypes.Clan{Location: betypes.Point{X: rand.Intn(height) + 1, Y: rand.Intn(width) + 1}, Mine: mine[i], Health: 0, Users: nil, Number: 0}
+		clan[i] = betypes.Clan{Location: betypes.Point{X: rand.Intn(height) + 1, Y: rand.Intn(width) + 1}, ClanMine: mine[i], Health: 0, Users: nil, Number: 0}
 	}
 	field := betypes.Field{Mines: &mine, Clans: &clan}
 	return field
