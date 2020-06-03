@@ -17,3 +17,9 @@ const (
 	UnclearCommandText = "Unclear command"
 )
 
+const (
+	//NumberOfMines = 0
+	TimeToMove      = 60 //In seconds
+	TimeToRegister = 5 //In seconds
+  )
+

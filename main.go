@@ -23,13 +23,17 @@ func main() {
 	getUpdates(NewBot)
 }
 
+
 func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
+	
+	actions.StartRecruitingForTheGame(update, bot)
+	actions.CreateNewUser(update)
+	
 	if update.Message.IsCommand() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 		switch update.Message.Command() {
 		case betypes.StartCommand:
 			msg.Text = betypes.StartText
-			actions.JoinGame(update)
 		case betypes.HelpCommand:
 			msg.Text = betypes.HelpText
 		default:
@@ -37,6 +41,7 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 		}
 		bot.Send(msg)
 	}
+	
 }
 
 func setWebhook(bot *tgbotapi.BotAPI) {
