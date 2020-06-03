@@ -25,9 +25,7 @@ func main() {
 
 
 func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	
-	actions.StartRecruitingForTheGame(update, bot)
-	actions.CreateNewUser(update)
+
 	
 	if update.Message.IsCommand() {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
