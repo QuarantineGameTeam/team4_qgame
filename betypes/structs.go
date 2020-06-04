@@ -49,3 +49,10 @@ type Field struct {
 	Mines *[]Mine
 	Clans *[]Clan
 }
+
+//Game - Saves the ID of the game and the players waiting to start
+type Game struct {
+	PlayersInLine map[int64]User //Players in line
+	GameID        int64
+	GameStarted   bool
+}

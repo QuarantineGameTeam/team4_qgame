@@ -1,13 +1,12 @@
 package main
 
 import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"net/http"
+	"team4_qgame/actions"
 	"team4_qgame/betypes"
 	"team4_qgame/loger"
-	"team4_qgame/actions"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var (
@@ -23,23 +22,29 @@ func main() {
 	getUpdates(NewBot)
 }
 
-
 func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
-
-	
-	if update.Message.IsCommand() {
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
-		switch update.Message.Command() {
-		case betypes.StartCommand:
-			msg.Text = betypes.StartText
-		case betypes.HelpCommand:
-			msg.Text = betypes.HelpText
-		default:
-			msg.Text = betypes.UnclearCommandText
+	if update.Message != nil {
+		if update.Message.IsCommand() {
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
+			switch update.Message.Command() {
+			case betypes.StartCommand:
+				msg.Text = betypes.StartText
+			case betypes.HelpCommand:
+				msg.Text = betypes.HelpText
+			case "startgame":
+				actions.StartRecruitingForTheGame(update, bot)
+			default:
+				msg.Text = betypes.UnclearCommandText
+			}
+			bot.Send(msg)
 		}
-		bot.Send(msg)
 	}
-	
+	if update.CallbackQuery != nil {
+		switch update.CallbackQuery.Data {
+		case "join_to_game":
+			actions.AddAPlayerToTheQueueForTheGame(update, bot)
+		}
+	}
 }
 
 func setWebhook(bot *tgbotapi.BotAPI) {
