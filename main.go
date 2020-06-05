@@ -13,15 +13,6 @@ var (
 	NewBot, BotErr = tgbotapi.NewBotAPI(betypes.BOT_TOKEN)
 )
 
-func main() {
-	go func() {
-		log.Fatal(http.ListenAndServe(":"+betypes.BOT_PORT, nil))
-	}()
-	loger.ForError(BotErr, "BOT_TOKEN error")
-
-	getUpdates(NewBot)
-}
-
 func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	if update.Message != nil {
 		if update.Message.IsCommand() {
@@ -47,6 +38,15 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	}
 }
 
+func main() {
+	go func() {
+		log.Fatal(http.ListenAndServe(":"+betypes.BOT_PORT, nil))
+	}()
+	loger.ForError(BotErr, "BOT_TOKEN error")
+
+	getUpdates(NewBot)
+}
+
 func setWebhook(bot *tgbotapi.BotAPI) {
 	_, err := bot.SetWebhook(tgbotapi.NewWebhook(betypes.WEB_HOOK))
 	loger.ForError(err, "setting WEB_HOOK", betypes.WEB_HOOK, "error")
@@ -55,6 +55,7 @@ func setWebhook(bot *tgbotapi.BotAPI) {
 func getUpdates(bot *tgbotapi.BotAPI) {
 	setWebhook(bot)
 	updates := bot.ListenForWebhook("/")
+
 	for update := range updates {
 		checkOnCommands(update, bot)
 	}

@@ -9,6 +9,7 @@ const (
 )
 
 //Game settings
-//const (
-//	NumberOfMines = 0
-//)
+const (
+	//NumberOfMines = 0
+	TimeToMove = 60 //In seconds
+)

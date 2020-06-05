@@ -5,7 +5,8 @@ import (
 	"strconv"
 	"team4_qgame/betypes"
 	"team4_qgame/loger"
-
+	"time"
+	"math/rand"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -33,4 +34,21 @@ func GetUser(id string) betypes.User {
 	var user betypes.User
 	json.Unmarshal([]byte(u), &user)
 	return user
+}
+//SaveField - save new field's data to the database
+func SaveField(field betypes.Field) {
+	j, _ := json.Marshal(field)
+	rand.Seed(time.Now().UnixNano())
+	fieldID := rand.Intn(1000000)
+	err := storage.Set(ctx, strconv.Itoa(fieldID), string(j), 0).Err()
+	loger.ForError(err, "Error writing to database error")
+}
+
+//GetField - Returns the field from the database by ID
+func GetField(id string) betypes.Field {
+	f, err := storage.Get(ctx, id).Result()
+	loger.ForError(err, "Error reading from database")
+	var field betypes.Field
+	json.Unmarshal([]byte(f), &field)
+	return field
 }
