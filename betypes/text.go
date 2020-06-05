@@ -20,3 +20,10 @@ const (
 const (
 	UnclearCommandText = "There is no such command"
 )
+
+const (
+	//NumberOfMines = 0
+	TimeToMove      = 60 //In seconds
+	TimeToRegister = 5 //In seconds
+  )
+
