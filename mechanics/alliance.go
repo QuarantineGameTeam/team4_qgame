@@ -1,4 +1,4 @@
-package actions
+package mechanics
 
 import (
 	"fmt"
