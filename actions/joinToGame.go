@@ -48,7 +48,7 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 		bot.Send(msg)
 		msg.ReplyMarkup = nil
 		gamesInLine[update.Message.Chat.ID] = betypes.Game{
-			PlayersInLine: nil,
+			PlayersInLine: map[int64]betypes.User{},
 			GameID:        update.Message.Chat.ID,
 			GameStarted:   false,
 		}
@@ -75,11 +75,11 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 }
 
 func AddAPlayerToTheQueueForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	if update.CallbackQuery != nil && update.CallbackQuery.Data == "join_to_game" {
+	if len(gamesInLine) != 0 && update.CallbackQuery != nil && update.CallbackQuery.Data == "join_to_game" {
 		if findUser(int64(update.CallbackQuery.From.ID)) {
 			user := db.GetUser(strconv.FormatInt(int64(update.CallbackQuery.From.ID), 10))
 			gamesInLine[update.CallbackQuery.Message.Chat.ID].PlayersInLine[int64(update.CallbackQuery.From.ID)] = user
-			bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("%s joined", update.CallbackQuery.From.FirstName)))
+			bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("@%s joined", update.CallbackQuery.From.UserName)))
 		}
 	}
 }
