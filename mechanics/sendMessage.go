@@ -57,7 +57,7 @@ func textMassage(update tgbotapi.Update, clan betypes.Clan, writeClan bool ) str
 		if getUserName == "" { 
 			text = fmt.Sprintf("*%s* ( _%v_  clan ) \n  %s", getFirstName, getClanNumber, getMessage)
 		} else {
-			text = fmt.Sprintf("*%s* ( _%v_  clan ) \n  %s", getUserName, getMessage)
+			text = fmt.Sprintf("*%s* ( _%v_  clan ) \n  %s", getUserName, getClanNumber, getMessage)
 		}
 	}
 	
