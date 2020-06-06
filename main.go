@@ -22,7 +22,7 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 				msg.Text = betypes.StartText
 			case betypes.HelpCommand:
 				msg.Text = betypes.HelpText
-			case "startgame":
+			case betypes.StartANewGameCommand:
 				actions.StartRecruitingForTheGame(update, bot)
 			default:
 				msg.Text = betypes.UnclearCommandText
@@ -32,7 +32,7 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	}
 	if update.CallbackQuery != nil {
 		switch update.CallbackQuery.Data {
-		case "join_to_game":
+		case actions.JoinToGame:
 			actions.AddAPlayerToTheQueueForTheGame(update, bot)
 		}
 	}

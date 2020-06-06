@@ -7,12 +7,15 @@ import (
 )
 
 func StartCommand(update *tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	msg := tgbotapi.NewMessage(update.Message.Chat.ID, betypes.StartText)
-	db.SaveUser(betypes.User{
-		Id:        update.Message.Chat.ID,
-		FirstName: update.Message.Chat.FirstName,
-		Username:  update.Message.Chat.UserName,
-		Rank:      0,
-	})
-	bot.Send(msg)
+	if !findUser(int64(update.Message.From.ID)) {
+		bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, betypes.StartText+"\n"+betypes.RegistrationIsSuccessfulText))
+		db.SaveUser(betypes.User{
+			Id:        update.Message.Chat.ID,
+			FirstName: update.Message.Chat.FirstName,
+			Username:  update.Message.Chat.UserName,
+			Rank:      0,
+		})
+	} else {
+		bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, betypes.AlreadyRegisteredText))
+	}
 }
