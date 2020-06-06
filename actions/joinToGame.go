@@ -12,7 +12,7 @@ import (
 const JoinToGame = "join_to_game"
 
 var (
-	gamesInLine = make(map[int64]betypes.Game)
+	gamesInLine = make(map[int64]betypes.GameInLine)
 	joinButton  = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("Join to game! ", JoinToGame),
@@ -51,7 +51,7 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 				msg.ReplyMarkup = joinButton
 				bot.Send(msg)
 				msg.ReplyMarkup = nil
-				gamesInLine[update.Message.Chat.ID] = betypes.Game{
+				gamesInLine[update.Message.Chat.ID] = betypes.GameInLine{
 					PlayersInLine: map[int64]betypes.User{},
 					GameID:        update.Message.Chat.ID,
 					GameStarted:   false,

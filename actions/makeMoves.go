@@ -12,14 +12,14 @@ func MakeMoves(clans *[]betypes.Clan) string {
 	for !theClanLost {
 		for i := 0; i < len(*clans); i++ { //The clan that goes is "i"
 			go func() {
-				for j := 0; j < len(*(*clans)[i].Users); j++ {
+				for j := 0; j < len((*clans)[i].Users); j++ {
 					if j == i {
 						//TODO: Make logic for sending votes
 					}
 				}
 			}()
 			go func() {
-				for j := 0; j < len(*(*clans)[i].Users); j++ {
+				for j := 0; j < len((*clans)[i].Users); j++ {
 					if j != i {
 						//TODO: Here the logic of improvements while another clan thinks what cell to open
 					}

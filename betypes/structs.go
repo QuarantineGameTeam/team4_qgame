@@ -41,19 +41,24 @@ type Clan struct {
 	Location Point //Each clan has its location on the map (X and Y)
 	ClanMine Mine  //The clan has one mine at the beginning
 	Health   int   //Removed during an attack on a clan
-	Users    *[]User
+	Users    []User
 	Number   int //Clan number
 }
 
 //Field - The location of each clan and mine is preserved in the field
 type Field struct {
-	Mines *[]Mine
-	Clans *[]Clan
+	Mines []Mine
+	Clans []Clan
 }
 
 //Game - Saves the ID of the game and the players waiting to start
-type Game struct {
+type GameInLine struct {
 	PlayersInLine map[int64]User //Players in line
 	GameID        int64
 	GameStarted   bool
+}
+
+type Game struct {
+	Battlefield Field
+	GameID      int64
 }
