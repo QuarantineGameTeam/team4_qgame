@@ -12,12 +12,12 @@ func SendMessageFormChat(bot *tgbotapi.BotAPI, clan betypes.Clan, update tgbotap
 	go func() {
 		if update.Message.Text != " " {
 			text := ""
-			getMessage := update.Message.Text
-			getUserName := update.Message.From.UserName
-			getFirstName := update.Message.From.FirstName
+			//getMessage := update.Message.Text
+			//getUserName := update.Message.From.UserName
+			//getFirstName := update.Message.From.FirstName
 
-			if len(users == 0) {
-				for _, user := range *clan.Users {
+			if len(users) == 0 {
+				for _, user := range clan.Users {
 					msg := tgbotapi.NewMessage(user.Id, "")
 					text = textMassage(update, clan, false)
 					msg.Text = text
@@ -31,7 +31,6 @@ func SendMessageFormChat(bot *tgbotapi.BotAPI, clan betypes.Clan, update tgbotap
 					bot.Send(msg)
 				}
 			}
-
 		}
 		<-time.After(time.Second * 60)
 	}()

@@ -1,6 +1,7 @@
 package betypes
 
 import (
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"math/rand"
 	"time"
@@ -107,12 +108,12 @@ type GameInLineMethods interface {
 	CreateAGame(field Field, update tgbotapi.Update, bot *tgbotapi.BotAPI)
 }
 
-func (game *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tgbotapi.BotAPI, allGames *[]Game) Game {
+func (g *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tgbotapi.BotAPI, allGames *[]Game) Game {
 	firstClan := make([]User, 0)
 	secondClan := make([]User, 0)
 	thirdClan := make([]User, 0)
 	rand.Seed(time.Now().UnixNano())
-	for _, user := range game.PlayersInLine {
+	for _, user := range g.PlayersInLine {
 		switch rand.Intn(3) {
 		case 0:
 			firstClan = append(firstClan, user)
@@ -135,7 +136,7 @@ func (game *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tg
 
 	newGame := Game{
 		Battlefield: field,
-		GameID:      game.GameID,
+		GameID:      g.GameID,
 	}
 	*allGames = append(*allGames, newGame)
 	return newGame
@@ -144,4 +145,33 @@ func (game *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tg
 type Game struct {
 	Battlefield Field
 	GameID      int64
+}
+
+type GameMethods interface {
+	MakeMoves()
+}
+
+func (game *Game) MakeMoves() {
+	go func() {
+		var theClanLost bool
+		for !theClanLost {
+			for i := 0; i < len(game.Battlefield.Clans); i++ {
+				go func() {
+					//TODO: Make logic for sending votes
+					fmt.Println("TODO: Make logic for sending votes")
+				}()
+				go func() {
+					//TODO: Here the logic of improvements while another clan thinks what cell to open
+					fmt.Println("TODO: Here the logic of improvements while another clan thinks what cell to open")
+				}()
+				<-time.After(time.Second * TimeToMove)
+				//TODO: You can also display how much time is left
+				fmt.Println("TODO: You can also display how much time is left")
+			}
+			//TODO: Here you should calculate the clan booty (or something like that)
+			fmt.Println("TODO: Here you should calculate the clan booty (or something like that)")
+		}
+		//TODO: It should show which team won, who got what prey and the rating of players who played
+		fmt.Println("TODO: It should show which team won, who got what prey and the rating of players who played")
+	}()
 }

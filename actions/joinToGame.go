@@ -65,21 +65,18 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 								sendTimeBeforeRegistrationEnds(betypes.TimeToRegister-passedFromTheBeginningOfRegistration, &msg, bot)
 								break
 							case 0:
-								msg.Text = fmt.Sprint("Registration is complete!\nThe game begins!!!")
-								bot.Send(msg)
+								bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprint("Registration is complete!\nThe game begins!!!")))
 								passedFromTheBeginningOfRegistration++
-								//createAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot)
 								gameInLine := gamesInLine[update.Message.Chat.ID]
-								gameInLine.CreateAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot, &Games)
-								//TODO: Logic that divides into teams
-
+								game := gameInLine.CreateAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot, &Games)
+								game.MakeMoves()
 								delete(gamesInLine, update.Message.Chat.ID)
 								break
 							}
 						}
 					}()
 					for ; passedFromTheBeginningOfRegistration < betypes.TimeToRegister; passedFromTheBeginningOfRegistration++ {
-						time.Sleep(1 * time.Second)
+						<-time.After(time.Second * 1)
 					}
 				}()
 			} else {
