@@ -2,12 +2,12 @@ package db
 
 import (
 	"encoding/json"
+	"github.com/go-redis/redis/v8"
+	"math/rand"
 	"strconv"
 	"team4_qgame/betypes"
 	"team4_qgame/loger"
 	"time"
-	"math/rand"
-	"github.com/go-redis/redis/v8"
 )
 
 var (
@@ -35,6 +35,7 @@ func GetUser(id string) betypes.User {
 	json.Unmarshal([]byte(u), &user)
 	return user
 }
+
 //SaveField - save new field's data to the database
 func SaveField(field betypes.Field) {
 	j, _ := json.Marshal(field)
@@ -51,4 +52,13 @@ func GetField(id string) betypes.Field {
 	var field betypes.Field
 	json.Unmarshal([]byte(f), &field)
 	return field
+}
+
+func GetAllKeys() []string {
+	keys := make([]string, 0)
+	iter := storage.Scan(ctx, 0, "", 0).Iterator()
+	for iter.Next(ctx) {
+		keys = append(keys, iter.Val())
+	}
+	return keys
 }

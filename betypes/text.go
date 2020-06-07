@@ -30,6 +30,7 @@ const (
 	StartANewGameText                    = "The set for the game has started!!"
 	EnrollmentInTheGame                  = "Enrollment in the game is possible only in group chats!!"
 	RecruitmentForTheGameHasAlreadyBegun = "Recruitment for the game has already begun!!"
+	AlreadyInLine                        = "You are already in line!!"
 )
 
 //Unclear command data

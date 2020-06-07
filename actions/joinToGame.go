@@ -2,16 +2,18 @@ package actions
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"strconv"
 	"team4_qgame/betypes"
 	"team4_qgame/db"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 const JoinToGame = "join_to_game"
 
 var (
+	Games       = make([]betypes.Game, 0)
 	gamesInLine = make(map[int64]betypes.GameInLine)
 	joinButton  = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -43,54 +45,65 @@ func sendTimeBeforeRegistrationEnds(toEnd int, message *tgbotapi.MessageConfig, 
 }
 
 func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	if update.Message.Chat.Type != "private" {
-		if !findGame(update.Message.Chat.ID) {
-			var passedFromTheBeginningOfRegistration int //It has passed since the beginning of registration
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s\nEnds in %d seconds", betypes.StartANewGameText, betypes.TimeToRegister))
-			go func() {
-				msg.ReplyMarkup = joinButton
-				bot.Send(msg)
-				msg.ReplyMarkup = nil
-				gamesInLine[update.Message.Chat.ID] = betypes.GameInLine{
-					PlayersInLine: map[int64]betypes.User{},
-					GameID:        update.Message.Chat.ID,
-					GameStarted:   false,
-				}
+	go func() {
+		if update.Message.Chat.Type != "private" {
+			if !findGame(update.Message.Chat.ID) {
+				var passedFromTheBeginningOfRegistration int //It has passed since the beginning of registration
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s\nEnds in %d seconds", betypes.StartANewGameText, betypes.TimeToRegister))
 				go func() {
-					for !(passedFromTheBeginningOfRegistration > betypes.TimeToRegister) {
-						switch betypes.TimeToRegister - passedFromTheBeginningOfRegistration {
-						case 30, 10, 5:
-							sendTimeBeforeRegistrationEnds(betypes.TimeToRegister-passedFromTheBeginningOfRegistration, &msg, bot)
-							break
-						case 0:
-							msg.Text = fmt.Sprint("Registration is complete!\nThe game begins!!!")
-							bot.Send(msg)
-							passedFromTheBeginningOfRegistration++
-							//TODO: Logic that divides into teams
-							delete(gamesInLine, update.Message.Chat.ID)
-							break
+					msg.ReplyMarkup = joinButton
+					bot.Send(msg)
+					msg.ReplyMarkup = nil
+					gamesInLine[update.Message.Chat.ID] = betypes.GameInLine{
+						PlayersInLine: map[int64]betypes.User{},
+						GameID:        update.Message.Chat.ID,
+					}
+					go func() {
+						for !(passedFromTheBeginningOfRegistration > betypes.TimeToRegister) {
+							switch betypes.TimeToRegister - passedFromTheBeginningOfRegistration {
+							case 30, 10, 5:
+								sendTimeBeforeRegistrationEnds(betypes.TimeToRegister-passedFromTheBeginningOfRegistration, &msg, bot)
+								break
+							case 0:
+								msg.Text = fmt.Sprint("Registration is complete!\nThe game begins!!!")
+								bot.Send(msg)
+								passedFromTheBeginningOfRegistration++
+								//createAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot)
+								gameInLine := gamesInLine[update.Message.Chat.ID]
+								gameInLine.CreateAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot, &Games)
+								//TODO: Logic that divides into teams
+
+								delete(gamesInLine, update.Message.Chat.ID)
+								break
+							}
 						}
+					}()
+					for ; passedFromTheBeginningOfRegistration < betypes.TimeToRegister; passedFromTheBeginningOfRegistration++ {
+						time.Sleep(1 * time.Second)
 					}
 				}()
-				for ; passedFromTheBeginningOfRegistration < betypes.TimeToRegister; passedFromTheBeginningOfRegistration++ {
-					time.Sleep(1 * time.Second)
-				}
-			}()
+			} else {
+				bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.RecruitmentForTheGameHasAlreadyBegun)))
+			}
 		} else {
-			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.RecruitmentForTheGameHasAlreadyBegun)))
+			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.EnrollmentInTheGame)))
 		}
-	} else {
-		bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.EnrollmentInTheGame)))
-	}
+	}()
 }
 
 func AddAPlayerToTheQueueForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
-	if update.CallbackQuery.Message.Chat.Type != "private" {
+	if update.CallbackQuery.Message.Chat.Type == "group" {
+		user := db.GetUser(strconv.FormatInt(int64(update.CallbackQuery.From.ID), 10))
 		if len(gamesInLine) != 0 && update.CallbackQuery != nil && update.CallbackQuery.Data == JoinToGame {
 			if findUser(int64(update.CallbackQuery.From.ID)) {
-				user := db.GetUser(strconv.FormatInt(int64(update.CallbackQuery.From.ID), 10))
-				gamesInLine[update.CallbackQuery.Message.Chat.ID].PlayersInLine[int64(update.CallbackQuery.From.ID)] = user
-				bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("@%s joined!!", update.CallbackQuery.From.UserName)))
+				if !user.QueueStatus {
+					gamesInLine[update.CallbackQuery.Message.Chat.ID].PlayersInLine[int64(update.CallbackQuery.From.ID)] = user
+					user.SetQueueStatus(true)
+					db.SaveUser(user)
+					bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("@%s joined!!", update.CallbackQuery.From.UserName)))
+				} else {
+					bot.Send(tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("@%s %s", update.CallbackQuery.From.UserName, betypes.AlreadyInLine)))
+				}
 			}
 		}
 	} else {

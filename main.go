@@ -1,12 +1,13 @@
 package main
 
 import (
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"net/http"
 	"team4_qgame/actions"
 	"team4_qgame/betypes"
 	"team4_qgame/loger"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var (
@@ -19,7 +20,7 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 			switch update.Message.Command() {
 			case betypes.StartCommand:
-				msg.Text = betypes.StartText
+				actions.StartCommand(&update, bot)
 			case betypes.HelpCommand:
 				msg.Text = betypes.HelpText
 			case betypes.StartANewGameCommand:
