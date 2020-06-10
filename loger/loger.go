@@ -11,7 +11,7 @@ var (
 	LogFile    = log.New(outfile, "", 0)
 )
 
-func ForError(err error, v ...interface{}) {
+func ForrError(err error, v ...interface{}) {
 	if err != nil {
 		LogFile.Fatalln("Time :", time.Now(), v, err)
 	}
