@@ -41,5 +41,5 @@ const (
 
 //Unclear command data
 const (
-	UnclearCommandText = "There is no such command"
+	UnclearCommandText = "There is no such command!!"
 )
