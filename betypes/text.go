@@ -8,7 +8,7 @@ const (
 		" Amazing adventures await you here. Here, you have to take part in big wars between clans," +
 		" form alliances, become a real spy and that's not all ..." +
 		" Try it yourself!"
-	RegistrationIsSuccessfulText = "\nYour registration is successful!!"
+	RegistrationIsSuccessfulText = "Your registration is successful!!"
 	AlreadyRegisteredText        = "You already registered!!"
 )
 
@@ -31,12 +31,12 @@ const (
 )
 
 const (
-	StartANewGameCommand                 = "startgame"
-	StartANewGameText                    = "The set for the game has started!!"
-	EnrollmentInTheGame                  = "Enrollment in the game is possible only in group chats!!"
-	RecruitmentForTheGameHasAlreadyBegun = "Recruitment for the game has already begun!!"
-	AlreadyInLine                        = "You are already in line!!"
-	UserIsNotRegisteredText              = "User is not registered!!"
+	StartANewGameCommand    = "startgame"
+	StartANewGameText       = "The set for the game has started!!"
+	EnrollmentInTheGame     = "Enrollment in the game is possible only in group chats!!"
+	GameHasAlreadyBegun     = "Game has already begun!!"
+	AlreadyInLine           = "You are already in line!!"
+	UserIsNotRegisteredText = "User is not registered!!"
 )
 
 //Unclear command data

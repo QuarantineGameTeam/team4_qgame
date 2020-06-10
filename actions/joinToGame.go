@@ -27,7 +27,7 @@ func sendTimeBeforeRegistrationEnds(toEnd int, message *tgbotapi.MessageConfig, 
 func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	go func() {
 		if update.Message.Chat.Type != "private" {
-			if !FindGameInLine(update.Message.Chat.ID) {
+			if !FindGameInLine(update.Message.Chat.ID) && !FindGame(update.Message.Chat.ID) {
 				var passedFromTheBeginningOfRegistration int //It has passed since the beginning of registration
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s\nEnds in %d seconds", betypes.StartANewGameText, betypes.TimeToRegister))
 				go func() {
@@ -47,12 +47,20 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 							case 0:
 								bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprint("Registration is complete!\nThe game begins!!!")))
 								passedFromTheBeginningOfRegistration++
-								if len(gamesInLine[update.Message.Chat.ID].PlayersInLine) >= 3 {
+								if len(gamesInLine[update.Message.Chat.ID].PlayersInLine) >= 1 /*If there are enough players the game will start*/ {
 									gameInLine := gamesInLine[update.Message.Chat.ID]
 									game := gameInLine.CreateAGame(createAField(betypes.FieldWidth, betypes.FieldHeight, betypes.NumberOfMines), update, bot, &games)
-									game.MakeMoves()
+									game.MakeMoves() //Started
+									bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprint("The game began. Open chat with the team's players!")))
+								} else {
+									for _, user := range gamesInLine[update.Message.Chat.ID].PlayersInLine {
+										user.SetPlayingStatus(false)
+										user.SetQueueStatus(false)
+										db.SaveUser(user)
+									}
+									bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprint("Not enough players!!")))
 								}
-								delete(gamesInLine, update.Message.Chat.ID)
+								delete(gamesInLine, update.Message.Chat.ID) //Remove game from the queue
 								break
 							}
 						}
@@ -62,7 +70,7 @@ func StartRecruitingForTheGame(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 					}
 				}()
 			} else {
-				bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.RecruitmentForTheGameHasAlreadyBegun)))
+				bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.GameHasAlreadyBegun)))
 			}
 		} else {
 			bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("%s", betypes.EnrollmentInTheGame)))

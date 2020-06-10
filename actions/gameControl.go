@@ -70,5 +70,3 @@ func GetGame(gameID int64) betypes.Game {
 	}
 	return betypes.Game{}
 }
-
-//func AtakClan(clanToAttack betypes.Clan, )
