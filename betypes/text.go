@@ -27,3 +27,9 @@ const (
 	TimeToRegister = 5 //In seconds
   )
 
+// size of Field
+const (
+	Width = 3
+	Hight = 3
+)
+
