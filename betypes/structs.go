@@ -21,4 +21,32 @@ type User struct {
 	Id        int64  `json:"id"`
 	FirstName string `json:"first_name"`
 	Username  string `json:"username"` //Note: another optional field
+	Rank      int64
+}
+
+//Point - We can save the location of the object with X and Y (For example, the location of the clan)
+type Point struct {
+	X, Y int
+}
+
+//Mine - It will give us resources depending on the level
+type Mine struct {
+	Location Point //Each mine has its location on the map (X and Y)
+	Level    int   //The speed of resource extraction depends on it
+	ToBelong int
+}
+
+//Clan - The main characteristics of the clan are stored here
+type Clan struct {
+	Location Point //Each clan has its location on the map (X and Y)
+	ClanMine Mine  //The clan has one mine at the beginning
+	Health   int   //Removed during an attack on a clan
+	Users    *[]User
+	Number   int //Clan number
+}
+
+//Field - The location of each clan and mine is preserved in the field
+type Field struct {
+	Mines *[]Mine
+	Clans *[]Clan
 }
