@@ -10,6 +10,9 @@ const (
 
 //Game settings
 const (
-	//NumberOfMines = 0
-	TimeToMove = 60 //In seconds
+	TimeToMove     = 60 //In seconds
+	TimeToRegister = 60 //In seconds
+	FieldWidth     = 5
+	FieldHeight    = 5
+	NumberOfMines  = 5
 )
