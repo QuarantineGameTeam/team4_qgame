@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"team4_qgame/actions"
 	"team4_qgame/betypes"
+	"team4_qgame/game"
 	"team4_qgame/loger"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -20,15 +21,26 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "")
 			switch update.Message.Command() {
 			case betypes.StartCommand:
-				actions.StartCommand(&update, bot)
+				actions.StartCommand(update, bot)
 			case betypes.HelpCommand:
 				msg.Text = betypes.HelpText
 			case betypes.StartANewGameCommand:
 				actions.StartRecruitingForTheGame(update, bot)
+			case betypes.ReregisterCommand:
+				actions.Reregister(update, bot)
 			default:
 				msg.Text = betypes.UnclearCommandText
 			}
 			bot.Send(msg)
+		} else if actions.FindPlayerInGame(int64(update.Message.From.ID)) && update.Message.Chat.Type == "private" {
+			gameCRT := actions.GetGame(actions.GetThePlayersGameID(int64(update.Message.From.ID)))
+			for _, clan := range gameCRT.Battlefield.Clans {
+				for _, user := range clan.Users {
+					if user.Id == int64(update.Message.From.ID) {
+						game.SendMessageFormChat(bot, clan, update)
+					}
+				}
+			}
 		}
 	}
 	if update.CallbackQuery != nil {

@@ -1,4 +1,4 @@
-package mechanics
+package game
 
 import (
 	"fmt"

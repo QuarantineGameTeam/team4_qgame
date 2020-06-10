@@ -12,6 +12,11 @@ const (
 	AlreadyRegisteredText        = "You already registered!!"
 )
 
+const (
+	ReregisterCommand          = "reregister"
+	ReReregisterSuccessfulText = "Re-register successful!!"
+)
+
 //Help command data
 const (
 	HelpCommand = "help"
@@ -31,6 +36,7 @@ const (
 	EnrollmentInTheGame                  = "Enrollment in the game is possible only in group chats!!"
 	RecruitmentForTheGameHasAlreadyBegun = "Recruitment for the game has already begun!!"
 	AlreadyInLine                        = "You are already in line!!"
+	UserIsNotRegisteredText              = "User is not registered!!"
 )
 
 //Unclear command data

@@ -2,9 +2,10 @@ package betypes
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"math/rand"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 /*type Update struct {
@@ -112,17 +113,23 @@ func (g *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tgbot
 	firstClan := make([]User, 0)
 	secondClan := make([]User, 0)
 	thirdClan := make([]User, 0)
+
 	rand.Seed(time.Now().UnixNano())
+
+	var i int
 	for _, user := range g.PlayersInLine {
-		switch rand.Intn(3) {
+		switch i {
 		case 0:
 			firstClan = append(firstClan, user)
 		case 1:
 			secondClan = append(secondClan, user)
 		case 2:
 			thirdClan = append(thirdClan, user)
+			i = 0
 		}
+		i++
 	}
+
 	for i := 0; i < len(field.Clans); i++ {
 		switch i {
 		case 0:
@@ -133,7 +140,6 @@ func (g *GameInLine) CreateAGame(field Field, update tgbotapi.Update, bot *tgbot
 			field.Clans[i].Users = thirdClan
 		}
 	}
-
 	newGame := Game{
 		Battlefield: field,
 		GameID:      g.GameID,
