@@ -2,13 +2,15 @@ package db
 
 import (
 	"encoding/json"
-	"github.com/go-redis/redis/v8"
-	"math/rand"
+	"log"
 	"strconv"
-	"team4_qgame/betypes"
+	"team4_qgame/betypes/methodsAndStructs"
 	"team4_qgame/loger"
-	"time"
+
+	"github.com/go-redis/redis/v8"
 )
+
+const USER = "USER_"
 
 var (
 	storage = redis.NewClient(&redis.Options{
@@ -21,37 +23,41 @@ var (
 )
 
 //SaveUser - Writes the user to the database
-func SaveUser(user betypes.User) {
-	j, _ := json.Marshal(user)
-	err := storage.Set(ctx, strconv.Itoa(int(user.Id)), string(j), 0).Err()
-	loger.ForError(err, "Error writing to database error")
+func SaveUser(user methodsAndStructs.User) error {
+	log.Println("Save user to the DB, ID", user.Id)
+	j, err := json.Marshal(user)
+	if err != nil {
+		log.Println("Could not marshal user", err)
+		return err
+	}
+	err = storage.Set(ctx, USER+strconv.FormatInt(user.Id, 10), string(j), 0).Err()
+	if err != nil {
+		log.Println("Could not save user", err)
+		return err
+	}
+	log.Println("User successfully saved to DB, ID", user.Id)
+	return nil
 }
 
 //GetUser - Returns the user from the database by ID
-func GetUser(id string) betypes.User {
-	u, err := storage.Get(ctx, id).Result()
-	loger.ForError(err, "Error reading from database")
-	var user betypes.User
-	json.Unmarshal([]byte(u), &user)
-	return user
-}
-
-//SaveField - save new field's data to the database
-func SaveField(field betypes.Field) {
-	j, _ := json.Marshal(field)
-	rand.Seed(time.Now().UnixNano())
-	fieldID := rand.Intn(1000000)
-	err := storage.Set(ctx, strconv.Itoa(fieldID), string(j), 0).Err()
-	loger.ForError(err, "Error writing to database error")
-}
-
-//GetField - Returns the field from the database by ID
-func GetField(id string) betypes.Field {
-	f, err := storage.Get(ctx, id).Result()
-	loger.ForError(err, "Error reading from database")
-	var field betypes.Field
-	json.Unmarshal([]byte(f), &field)
-	return field
+func GetUser(id int64) (*methodsAndStructs.User, error) {
+	u := &methodsAndStructs.User{}
+	log.Println("Get user from DB, user ID", id)
+	r, err := storage.Get(ctx, USER+strconv.FormatInt(id, 10)).Result()
+	if err == redis.Nil {
+		log.Println("User not found", err)
+		return nil, err
+	} else if err != nil {
+		loger.ForError(err, "Could not read user from DB")
+	} else {
+		err := json.Unmarshal([]byte(r), u)
+		if err != nil {
+			log.Println("Could not unmarshal user", err)
+			return nil, err
+		}
+		log.Println("User successfully received from DB, ID", u.Id)
+	}
+	return u, nil
 }
 
 func GetAllKeys() []string {

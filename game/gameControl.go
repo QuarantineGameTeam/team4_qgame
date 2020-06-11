@@ -1,25 +1,25 @@
-package actions
+package game
 
 import (
-	"strconv"
-	"team4_qgame/betypes"
+	"team4_qgame/betypes/methodsAndStructs"
 	"team4_qgame/db"
 )
 
 var (
-	gamesInLine = make(map[int64]betypes.GameInLine)
-	games       = make([]betypes.Game, 0)
+	GamesInLine = make(map[int64]methodsAndStructs.GameInLine)
+	Games       = make([]methodsAndStructs.Game, 0)
 )
 
 func FindUser(id int64) bool {
-	if db.GetUser(strconv.FormatInt(id, 10)).Id == id {
+	u, _ := db.GetUser(id)
+	if u.Id == id {
 		return true
 	}
 	return false
 }
 
 func FindGameInLine(id int64) bool {
-	for _, game := range gamesInLine {
+	for _, game := range GamesInLine {
 		if game.GameID == id {
 			return true
 		}
@@ -28,7 +28,7 @@ func FindGameInLine(id int64) bool {
 }
 
 func FindGame(gameID int64) bool {
-	for _, game := range games {
+	for _, game := range Games {
 		if game.GameID == gameID {
 			return true
 		}
@@ -37,7 +37,7 @@ func FindGame(gameID int64) bool {
 }
 
 func FindPlayerInGame(playerID int64) bool {
-	for _, game := range games {
+	for _, game := range Games {
 		for _, clan := range game.Battlefield.Clans {
 			for _, user := range clan.Users {
 				if user.Id == playerID {
@@ -49,8 +49,8 @@ func FindPlayerInGame(playerID int64) bool {
 	return false
 }
 
-func GetThePlayersGameID(playerID int64) int64 {
-	for _, game := range games {
+func GetGameIDByPlayerID(playerID int64) int64 {
+	for _, game := range Games {
 		for _, clan := range game.Battlefield.Clans {
 			for _, user := range clan.Users {
 				if user.Id == playerID {
@@ -62,11 +62,11 @@ func GetThePlayersGameID(playerID int64) int64 {
 	return 0
 }
 
-func GetGame(gameID int64) betypes.Game {
-	for _, game := range games {
+func GetGame(gameID int64) methodsAndStructs.Game {
+	for _, game := range Games {
 		if game.GameID == gameID {
 			return game
 		}
 	}
-	return betypes.Game{}
+	return methodsAndStructs.Game{}
 }

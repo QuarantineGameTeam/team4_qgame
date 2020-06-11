@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	"team4_qgame/actions"
 	"team4_qgame/betypes"
+	"team4_qgame/game"
+	"team4_qgame/game/actions"
 	"team4_qgame/game/mechanics"
 	"team4_qgame/loger"
 
@@ -32,9 +33,8 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 				msg.Text = betypes.UnclearCommandText
 			}
 			bot.Send(msg)
-		} else if actions.FindPlayerInGame(int64(update.Message.From.ID)) && update.Message.Chat.Type == "private" /*Only in private chats*/ {
-			gameCRT := actions.GetGame(actions.GetThePlayersGameID(int64(update.Message.From.ID)))
-			for _, clan := range gameCRT.Battlefield.Clans {
+		} else if game.FindPlayerInGame(int64(update.Message.From.ID)) && update.Message.Chat.Type == "private" /*Only in private chats*/ {
+			for _, clan := range game.GetGame(game.GetGameIDByPlayerID(int64(update.Message.From.ID))).Battlefield.Clans { //Game Chat
 				for _, user := range clan.Users {
 					if user.Id == int64(update.Message.From.ID) {
 						mechanics.SendMessageFormChat(bot, clan, update)
@@ -45,10 +45,18 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	}
 	if update.CallbackQuery != nil {
 		switch update.CallbackQuery.Data {
-		case actions.JoinToGame:
+		case betypes.JoinToGameButtonData:
+			bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
 			actions.AddAPlayerToTheQueueForTheGame(update, bot)
-		case mechanics.UpArrow, mechanics.DownArrow, mechanics.LeftArrow, mechanics.RightArrow:
-
+		case betypes.UpArrow, betypes.DownArrow, betypes.LeftArrow, betypes.RightArrow:
+			for _, clan := range game.GetGame(game.GetGameIDByPlayerID(int64(update.CallbackQuery.From.ID))).Battlefield.Clans {
+				for _, user := range clan.Users {
+					if user.Id == int64(update.CallbackQuery.From.ID) {
+						bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
+						clan.WhereToGo.AddAVoice(update.CallbackQuery.Data, &clan.Location, update, bot)
+					}
+				}
+			}
 		}
 	}
 }
@@ -57,6 +65,7 @@ func main() {
 	go func() {
 		log.Fatal(http.ListenAndServe(":"+betypes.BOT_PORT, nil))
 	}()
+	log.Printf("Authorized on account %s", NewBot.Self.UserName)
 	loger.ForError(BotErr, "BOT_TOKEN error")
 
 	getUpdates(NewBot)

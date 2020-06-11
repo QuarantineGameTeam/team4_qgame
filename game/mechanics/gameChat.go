@@ -2,13 +2,13 @@ package mechanics
 
 import (
 	"fmt"
-	"team4_qgame/betypes"
+	"team4_qgame/betypes/methodsAndStructs"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func SendMessageFormChat(bot *tgbotapi.BotAPI, clan betypes.Clan, update tgbotapi.Update, users ...betypes.User) {
+func SendMessageFormChat(bot *tgbotapi.BotAPI, clan methodsAndStructs.Clan, update tgbotapi.Update, users ...methodsAndStructs.User) {
 	go func() {
 		if update.Message.Text != " " {
 			text := ""
@@ -33,7 +33,7 @@ func SendMessageFormChat(bot *tgbotapi.BotAPI, clan betypes.Clan, update tgbotap
 	}()
 }
 
-func textMassage(update tgbotapi.Update, clan betypes.Clan, writeClan bool) string {
+func textMassage(update tgbotapi.Update, clan methodsAndStructs.Clan, writeClan bool) string {
 	text := ""
 	getMessage := update.Message.Text
 	getUserName := update.Message.From.UserName

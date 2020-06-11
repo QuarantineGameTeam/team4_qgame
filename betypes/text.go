@@ -1,5 +1,7 @@
 package betypes
 
+import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+
 //Start command data
 const (
 	StartCommand = "start"
@@ -42,4 +44,28 @@ const (
 //Unclear command data
 const (
 	UnclearCommandText = "There is no such command!!"
+)
+
+const (
+	RightArrow = "➡"
+	UpArrow    = "⬆"
+	LeftArrow  = "⬅"
+	DownArrow  = "⬇"
+)
+
+var SelectMoveButton = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData(RightArrow, RightArrow),
+		tgbotapi.NewInlineKeyboardButtonData(UpArrow, UpArrow),
+		tgbotapi.NewInlineKeyboardButtonData(LeftArrow, LeftArrow),
+		tgbotapi.NewInlineKeyboardButtonData(DownArrow, DownArrow),
+	),
+)
+
+const JoinToGameButtonData = "join_to_game"
+
+var JoinButton = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Join to game! ", JoinToGameButtonData),
+	),
 )

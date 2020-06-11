@@ -1,4 +1,4 @@
-package betypes
+package methodsAndStructs
 
 type User struct {
 	Id            int64  `json:"id"`
@@ -21,13 +21,22 @@ type Mine struct {
 	ToBelong int   //The number of the clan that owns the mine
 }
 
+type WhereToGoVoting struct {
+	UpNumberOfVotes    int
+	DownNumberOfVotes  int
+	LeftNumberOfVotes  int
+	RightNumberOfVotes int
+	//StayNumberOfVotes  int
+}
+
 //Clan - The main characteristics of the clan are stored here
 type Clan struct {
-	Location Point //Each clan has its location on the map (X and Y)
-	ClanMine Mine  //The clan has one mine at the beginning
-	Health   int   //Removed during an attack on a clan
-	Users    []User
-	Number   int //Clan number
+	Location  Point //Each clan has its location on the map (X and Y)
+	ClanMine  Mine  //The clan has one mine at the beginning
+	Health    int   //Removed during an attack on a clan
+	Users     []User
+	Number    int //Clan number
+	WhereToGo WhereToGoVoting
 }
 
 //Field - The location of each clan and mine is preserved in the field
