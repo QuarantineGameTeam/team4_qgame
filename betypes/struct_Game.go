@@ -2,9 +2,10 @@ package betypes
 
 import (
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 type Game struct {
@@ -13,30 +14,50 @@ type Game struct {
 }
 
 func (g *Game) MakeMoves(bot *tgbotapi.BotAPI) {
-	go func() {
-		log.Println("Game started, ID", g.GameID)
-		g.SendTeamsColor(bot)
+	go startMakeMoves(g, bot)
+}
 
-		var moveNumber int
-		var theClanLost bool
-		for !theClanLost {
-			for _, clan := range g.Battlefield.Clans {
-				log.Println("Game make move, ID", g.GameID)
-				go func() {
-					bot.Send(tgbotapi.NewMessage(g.GameID, fmt.Sprintf("Move number %d\nWalking now %s", moveNumber, clan.Name)))
-					moveNumber++
-					clan.StartVotingWhereToGo(bot)
-				}()
-				go func() {
-					//TODO: Here the logic of improvements while another clan thinks what cell to open
-				}()
-				<-time.After(time.Second * TimeToMove)
-				clan.StopVoting(bot)
+func startMakeMoves(g *Game, bot *tgbotapi.BotAPI) {
+	log.Println("Game started, ID", g.GameID)
+	g.SendTeamsColor(bot)
+
+	var moveNumber int
+	var theClanLost bool
+
+	for !theClanLost {
+		for _, clan := range g.Battlefield.Clans {
+			log.Println("Game make move, ID", g.GameID)
+			sendMoveInfo(bot, g.GameID, moveNumber, clan.Name)
+
+			go clan.StartVotingWhereToGo(bot)
+			<-time.After(time.Second * TimeToMove)
+			clan.StopVoting(bot)
+
+			for _, user := range clan.Users {
+				bot.Send(tgbotapi.NewMessage(user.Id, "🔺Voting is over!🔺"))
 			}
-			//TODO: Here you should calculate the clan booty (or something like that)
+
+			//isThereAnother, clanNumber, clanName := clan.IsOtherClanInPoint(g.Battlefield.Clans)
+			//if isThereAnother {
+			//	bot.Send(tgbotapi.NewMessage(g.GameID, fmt.Sprintf("🔺%s found %s🔺", clan.Name, clanName)))
+			//}
+			//offerAnAllianceOrWar(clan, g.Battlefield.Clans, isThereAnother, *clanNumber, *clanName, bot)
 		}
-		//TODO: It should show which team won, who got what prey and the rating of players who played
-	}()
+	}
+}
+
+func offerAnAllianceOrWar(sender Clan, clans []Clan, isThereAnother bool, clanNumber int, clanName string, bot *tgbotapi.BotAPI) {
+	if isThereAnother {
+		for _, clan := range clans {
+			if clan.Number == clanNumber {
+
+			}
+		}
+	}
+}
+
+func sendMoveInfo(bot *tgbotapi.BotAPI, gameId int64, moveNumber int, clanName string) {
+	bot.Send(tgbotapi.NewMessage(gameId, fmt.Sprintf("🌟Move number %d\nWalking now %s🌟", moveNumber, clanName)))
 }
 
 func (g *Game) SendTeamsColor(bot *tgbotapi.BotAPI) {

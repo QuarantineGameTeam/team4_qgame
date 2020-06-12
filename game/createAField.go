@@ -20,7 +20,6 @@ func CreateAField(width, height, numberOfMines int) betypes.Field {
 	for i := 0; i < 3; /*Number of clans*/ i++ {
 		clan = append(clan, betypes.Clan{
 			Location:  betypes.Point{X: rand.Intn(height) + 1, Y: rand.Intn(width) + 1},
-			ClanMine:  mine[i],
 			Health:    0,
 			Users:     nil,
 			Number:    0,

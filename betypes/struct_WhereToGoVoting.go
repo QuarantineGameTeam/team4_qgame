@@ -12,7 +12,7 @@ type WhereToGoVoting struct {
 
 func (v *WhereToGoVoting) AddAVoice(forWhat string, clanLocation *Point, update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	if update.CallbackQuery != nil {
-		msg := tgbotapi.NewMessage(int64(update.CallbackQuery.From.ID), "<empty>")
+		msg := tgbotapi.NewMessage(int64(update.CallbackQuery.From.ID), "")
 		switch forWhat {
 		case LeftArrow:
 			if clanLocation.X-1 < 1 {
