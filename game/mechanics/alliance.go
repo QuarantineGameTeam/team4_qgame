@@ -1,6 +1,6 @@
 package mechanics
 
-import (
+/*import (
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -65,5 +65,4 @@ func OfferAnAlliance(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi
 			bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("Your offer for alliance has been rejected.")))
 		}
 	}
-}
-
+} */
