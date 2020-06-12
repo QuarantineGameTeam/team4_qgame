@@ -66,9 +66,9 @@ func main() {
 	go func() {
 		log.Fatal(http.ListenAndServe(":"+betypes.BOT_PORT, nil))
 	}()
-	log.Printf("Authorized on account %s", NewBot.Self.UserName)
 
 	loger.ForError(BotErr, "BOT_TOKEN error")
+	log.Printf("Authorized on account %s", NewBot.Self.UserName)
 
 	getUpdates(NewBot)
 }

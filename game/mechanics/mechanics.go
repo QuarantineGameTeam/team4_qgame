@@ -1,35 +1,35 @@
 package mechanics
+
 import (
 	"fmt"
 	"math/rand"
-	"strconv"
 	"team4_qgame/betypes"
-	"team4_qgame/db"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
+
 func OfferAnAlliance(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	var PollingKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("Accept", "1"),
-			tgbotapi.NewInlineKeyboardButtonData("Reject", "2"),
+			tgbotapi.NewInlineKeyboardButtonData("Accept", "accept_alliance"),
+			tgbotapi.NewInlineKeyboardButtonData("Reject", "reject_alliance"),
 		),
 	)
 	pollCounterFor := 0
 	pollCounterAgainst := 0
 	go func() {
-		for _, user := range *receiver.Users {
+		for _, user := range receiver.Users {
 			bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("You've received an offer for alliance!")))
 			msg := tgbotapi.NewMessage(user.Id, "")
 			msg.ReplyMarkup = PollingKeyboard
 			if update.CallbackQuery != nil {
 				switch update.CallbackQuery.Data {
-				case "Accept":
+				case "accept_alliance":
 					pollCounterFor++
 					msg.Text = fmt.Sprint("You voted for alliance,\n")
 					break
-				case "Reject":
+				case "reject_alliance":
 					pollCounterAgainst++
 					msg.Text = fmt.Sprint("You voted against alliance.\n")
 					break
@@ -41,33 +41,33 @@ func OfferAnAlliance(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi
 	}()
 	if pollCounterFor >= pollCounterAgainst {
 		go func() {
-			for _, user := range *sender.Users {
+			for _, user := range sender.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("Your offer for alliance has been accepted.")))
 			}
 			sender.Number += receiver.Number
 			receiver.Number += sender.Number
 		}()
 		go func() {
-			for _, mineR := range *receiver.Mines {
-				*sender.Mines = append(*sender.Mines, mineR)
+			for _, mineR := range receiver.Mines {
+				sender.Mines = append(sender.Mines, mineR)
 			}
 		}()
-		for _, mineS := range *sender.Mines {
-			*receiver.Mines = append(*receiver.Mines, mineS)
+		for _, mineS := range sender.Mines {
+			receiver.Mines = append(receiver.Mines, mineS)
 		}
 		go func() {
-			for _, user := range *receiver.Users {
-				*sender.Users = append(*sender.Users, user)
+			for _, user := range receiver.Users {
+				sender.Users = append(sender.Users, user)
 			}
 		}()
 		go func() {
-			for _, user := range *sender.Users {
-				*receiver.Users = append(*receiver.Users, user)
+			for _, user := range sender.Users {
+				receiver.Users = append(receiver.Users, user)
 			}
 		}()
 	} else {
 		go func() {
-			for _, user := range *sender.Users {
+			for _, user := range sender.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("Your offer for alliance has been rejected.")))
 			}
 		}()
@@ -91,7 +91,7 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 	counterR := 0
 	counterS := 0
 	go func() {
-		for _, user := range *receiver.Users {
+		for _, user := range receiver.Users {
 			msg := tgbotapi.NewMessage(user.Id, fmt.Sprintf("Clan #%d has just declared you a war!", sender.Number))
 			bot.Send(msg)
 			msg.ReplyMarkup = AttackButton
@@ -99,7 +99,7 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 				switch update.CallbackQuery.Data {
 				case "Attack":
 					counterR++
-					if counterR < len(*receiver.Users) {
+					if counterR < len(receiver.Users) {
 						msg.Text = "Wait for other members to accept war..."
 						bot.Send(msg)
 						break
@@ -108,15 +108,15 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 			}
 		}
 	}()
-	if counterR < len(*receiver.Users) {
+	if counterR < len(receiver.Users) {
 		go func() {
-			for _, user := range *receiver.Users {
+			for _, user := range receiver.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintln("Unfortunately, your clan's memebers decided not to attack.")))
 			}
 		}()
 	} else {
 		go func() {
-			for _, user := range *receiver.Users {
+			for _, user := range receiver.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("The war begins!💥")))
 				msg := tgbotapi.NewMessage(user.Id, "")
 				if update.CallbackQuery.Data == "Attack" {
@@ -134,14 +134,14 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 		}()
 	}
 	go func() {
-		for _, user := range *sender.Users {
+		for _, user := range sender.Users {
 			msg := tgbotapi.NewMessage(user.Id, "")
 			msg.ReplyMarkup = AttackButton
 			if update.CallbackQuery != nil {
 				switch update.CallbackQuery.Data {
 				case "Attack":
 					counterS++
-					if counterS < len(*sender.Users) {
+					if counterS < len(sender.Users) {
 						msg.Text = "Wait for other members to start attack..."
 						bot.Send(msg)
 					}
@@ -150,15 +150,15 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 			}
 		}
 	}()
-	if counterS < len(*sender.Users) {
+	if counterS < len(sender.Users) {
 		go func() {
-			for _, user := range *sender.Users {
+			for _, user := range sender.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintln("Unfortunately, your clan's memebers decided not to attack.")))
 			}
 		}()
 	} else {
 		go func() {
-			for _, user := range *sender.Users {
+			for _, user := range sender.Users {
 				bot.Send(tgbotapi.NewMessage(user.Id, fmt.Sprintf("The war begins!💥")))
 				msg := tgbotapi.NewMessage(user.Id, "")
 				if update.CallbackQuery.Data == "Attack" {
@@ -176,6 +176,4 @@ func DeclareWar(sender *betypes.Clan, receiver *betypes.Clan, bot *tgbotapi.BotA
 			}
 		}()
 	}
-
 }
-
