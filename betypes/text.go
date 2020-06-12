@@ -1,6 +1,8 @@
 package betypes
 
-import tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+import (
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+)
 
 //Start command data
 const (
@@ -14,6 +16,7 @@ const (
 	AlreadyRegisteredText        = "You already registered!!"
 )
 
+//Re-register command data
 const (
 	ReregisterCommand          = "reregister"
 	ReReregisterSuccessfulText = "Re-register successful!!"
@@ -33,18 +36,25 @@ const (
 )
 
 const (
-	StartANewGameCommand    = "startgame"
-	StartANewGameText       = "The set for the game has started!!"
-	EnrollmentInTheGame     = "Enrollment in the game is possible only in group chats!!"
-	GameHasAlreadyBegun     = "Game has already begun!!"
-	AlreadyInLine           = "You are already in line!!"
-	UserIsNotRegisteredText = "User is not registered!!"
+	StartANewGameCommand           = "startgame"
+	StartANewGameText              = "The set for the game has started!!"
+	EnrollmentInTheGame            = "Enrollment in the game is possible only in group chats!!"
+	GameHasAlreadyBegun            = "Game has already begun!!"
+	NotEnoughPlayersToStartTheGame = "Not enough players to start the game!!"
+	AlreadyInLine                  = "You are already in line!!"
+	UserIsNotRegisteredText        = "User is not registered!!"
 )
 
 //Unclear command data
 const (
-	UnclearCommandText = "There is no such command!!"
+	UnclearCommandText = "There is no such command!!🙃"
 )
+
+var NamesOfClans = map[int]string{
+	1: "🔵Blue🔵",
+	2: "🔴Red🔴",
+	3: "🟢Green🟢",
+}
 
 const (
 	RightArrow = "➡"

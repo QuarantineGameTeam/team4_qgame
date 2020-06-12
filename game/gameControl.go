@@ -1,13 +1,13 @@
 package game
 
 import (
-	"team4_qgame/betypes/methodsAndStructs"
+	"team4_qgame/betypes"
 	"team4_qgame/db"
 )
 
 var (
-	GamesInLine = make(map[int64]methodsAndStructs.GameInLine)
-	Games       = make([]methodsAndStructs.Game, 0)
+	GamesInLine = make(map[int64]betypes.GameInLine)
+	Games       = make([]betypes.Game, 0)
 )
 
 func FindUser(id int64) bool {
@@ -62,11 +62,11 @@ func GetGameIDByPlayerID(playerID int64) int64 {
 	return 0
 }
 
-func GetGame(gameID int64) methodsAndStructs.Game {
+func GetGame(gameID int64) betypes.Game {
 	for _, game := range Games {
 		if game.GameID == gameID {
 			return game
 		}
 	}
-	return methodsAndStructs.Game{}
+	return betypes.Game{}
 }

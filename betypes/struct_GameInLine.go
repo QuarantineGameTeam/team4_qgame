@@ -1,9 +1,15 @@
-package methodsAndStructs
+package betypes
 
 import (
 	"math/rand"
 	"time"
 )
+
+//Game - Saves the ID of the game and the players waiting to start
+type GameInLine struct {
+	PlayersInLine map[int64]User //Players in line
+	GameID        int64
+}
 
 func (g *GameInLine) CreateAGame(field Field, allGames *[]Game) Game { //TODO: Rewrite
 	firstClan := make([]User, 0)

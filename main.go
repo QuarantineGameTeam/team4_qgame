@@ -46,14 +46,15 @@ func checkOnCommands(update tgbotapi.Update, bot *tgbotapi.BotAPI) {
 	if update.CallbackQuery != nil {
 		switch update.CallbackQuery.Data {
 		case betypes.JoinToGameButtonData:
-			bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
 			actions.AddAPlayerToTheQueueForTheGame(update, bot)
+			bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
 		case betypes.UpArrow, betypes.DownArrow, betypes.LeftArrow, betypes.RightArrow:
 			for _, clan := range game.GetGame(game.GetGameIDByPlayerID(int64(update.CallbackQuery.From.ID))).Battlefield.Clans {
 				for _, user := range clan.Users {
 					if user.Id == int64(update.CallbackQuery.From.ID) {
-						bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
 						clan.WhereToGo.AddAVoice(update.CallbackQuery.Data, &clan.Location, update, bot)
+						bot.AnswerCallbackQuery(tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)) //In order for the Telegram to understand what we answered
+						actions.ReremoveKeyboard(bot, update)
 					}
 				}
 			}
@@ -66,6 +67,7 @@ func main() {
 		log.Fatal(http.ListenAndServe(":"+betypes.BOT_PORT, nil))
 	}()
 	log.Printf("Authorized on account %s", NewBot.Self.UserName)
+
 	loger.ForError(BotErr, "BOT_TOKEN error")
 
 	getUpdates(NewBot)

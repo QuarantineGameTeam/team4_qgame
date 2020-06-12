@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
-	"team4_qgame/betypes/methodsAndStructs"
+	"team4_qgame/betypes"
 	"team4_qgame/loger"
 
 	"github.com/go-redis/redis/v8"
@@ -23,7 +23,7 @@ var (
 )
 
 //SaveUser - Writes the user to the database
-func SaveUser(user methodsAndStructs.User) error {
+func SaveUser(user betypes.User) error {
 	log.Println("Save user to the DB, ID", user.Id)
 	j, err := json.Marshal(user)
 	if err != nil {
@@ -40,8 +40,8 @@ func SaveUser(user methodsAndStructs.User) error {
 }
 
 //GetUser - Returns the user from the database by ID
-func GetUser(id int64) (*methodsAndStructs.User, error) {
-	u := &methodsAndStructs.User{}
+func GetUser(id int64) (*betypes.User, error) {
+	u := &betypes.User{}
 	log.Println("Get user from DB, user ID", id)
 	r, err := storage.Get(ctx, USER+strconv.FormatInt(id, 10)).Result()
 	if err == redis.Nil {
